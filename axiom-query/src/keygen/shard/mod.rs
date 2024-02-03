@@ -10,7 +10,7 @@ use axiom_eth::{
         poly::{commitment::ParamsProver, kzg::commitment::ParamsKZG},
     },
     halo2curves::bn256::{Bn256, Fr, G1Affine},
-    rlc::virtual_region::RlcThreadBreakPoints,
+    rlc::{virtual_region::RlcThreadBreakPoints, circuit::builder::RlcCircuitBuilder},
     snark_verifier::pcs::kzg::KzgDecidingKey,
     snark_verifier_sdk::CircuitExt,
     utils::{
@@ -169,7 +169,7 @@ where
 
 impl<C, P> KeygenCircuitIntent<Fr> for ComponentShardCircuitIntent<C, P>
 where
-    C: CoreBuilder<Fr> + CircuitMetadata + 'static,
+    C: CoreBuilder<Fr, CircuitBuilder = RlcCircuitBuilder<Fr>> + CircuitMetadata + 'static,
     C::Params: CoreBuilderParams,
     C::CoreInput: DummyFrom<C::Params>,
     P: DummyPromiseBuilder<Fr>,
@@ -230,7 +230,7 @@ fn default_lookup_bits() -> usize {
 
 impl<C, P> ProvingKeySerializer for ComponentShardCircuitIntent<C, P>
 where
-    C: CoreBuilder<Fr> + CircuitMetadata + 'static,
+    C: CoreBuilder<Fr, CircuitBuilder = RlcCircuitBuilder<Fr>> + CircuitMetadata + 'static,
     C::Params: CoreBuilderParams + Clone,
     C::CoreInput: DummyFrom<C::Params>,
     P: DummyPromiseBuilder<Fr>,

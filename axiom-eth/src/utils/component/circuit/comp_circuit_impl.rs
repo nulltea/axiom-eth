@@ -52,7 +52,9 @@ pub struct ComponentCircuitImpl<F: Field, C: CoreBuilder<F>, P: PromiseBuilder<F
     pub val_public_instances: RefCell<Option<ComponentPublicInstances<F>>>,
 }
 
-impl<F: Field, C: CoreBuilder<F>, P: PromiseBuilder<F>> ComponentCircuitImpl<F, C, P> {
+impl<F: Field, C: CoreBuilder<F, CircuitBuilder = RlcCircuitBuilder<F>>, P: PromiseBuilder<F>>
+    ComponentCircuitImpl<F, C, P>
+{
     /// Create a new component circuit.
     pub fn new(
         core_builder_params: C::Params,
@@ -201,6 +203,7 @@ impl<F: Field, C: CoreBuilder<F>, P: PromiseBuilder<F>> ComponentCircuitImpl<F, 
         hasher.initialize_consts(ctx, &gate_chip);
         let promise_commit = hasher.hash_fix_len_array(ctx, &gate_chip, &promise_commits);
 
+
         let public_instances = ComponentPublicInstances::<AssignedValue<F>> {
             output_commit,
             promise_result_commit: promise_commit,
@@ -213,8 +216,8 @@ impl<F: Field, C: CoreBuilder<F>, P: PromiseBuilder<F>> ComponentCircuitImpl<F, 
     }
 }
 
-impl<F: Field, C: CoreBuilder<F>, P: PromiseBuilder<F>> ComponentCircuit<F>
-    for ComponentCircuitImpl<F, C, P>
+impl<F: Field, C: CoreBuilder<F, CircuitBuilder = RlcCircuitBuilder<F>>, P: PromiseBuilder<F>>
+    ComponentCircuit<F> for ComponentCircuitImpl<F, C, P>
 {
     fn clear_witnesses(&self) {
         self.rlc_builder.borrow_mut().clear();
@@ -311,8 +314,8 @@ impl<F: Field, C: CoreBuilder<F>, P: PromiseBuilder<F>> ComponentCircuit<F>
     }
 }
 
-impl<F: Field, C: CoreBuilder<F>, P: PromiseBuilder<F>> Circuit<F>
-    for ComponentCircuitImpl<F, C, P>
+impl<F: Field, C: CoreBuilder<F, CircuitBuilder = RlcCircuitBuilder<F>>, P: PromiseBuilder<F>>
+    Circuit<F> for ComponentCircuitImpl<F, C, P>
 {
     type Config = (C::Config, P::Config, RlcConfig<F>);
     type Params = (C::Params, P::Params, RlcCircuitParams);
@@ -421,8 +424,8 @@ impl<F: Field, C: CoreBuilder<F>, P: PromiseBuilder<F>> CircuitPinningInstructio
 }
 
 #[cfg(feature = "aggregation")]
-impl<F: Field, C: CoreBuilder<F>, P: PromiseBuilder<F>> CircuitExt<F>
-    for ComponentCircuitImpl<F, C, P>
+impl<F: Field, C: CoreBuilder<F, CircuitBuilder = RlcCircuitBuilder<F>>, P: PromiseBuilder<F>>
+    CircuitExt<F> for ComponentCircuitImpl<F, C, P>
 where
     C: CircuitMetadata,
 {

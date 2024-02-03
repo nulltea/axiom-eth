@@ -78,6 +78,7 @@ pub trait CoreBuilder<F: Field>: ComponentBuilder<F, Params: CoreBuilderParams> 
     type PublicInstanceValue: FixLenLogical<F>;
     type PublicInstanceWitness: FixLenLogical<AssignedValue<F>>;
     type CoreInput: CoreBuilderInput<F> + DummyFrom<Self::Params>;
+    type CircuitBuilder: Sized = RlcCircuitBuilder<F>;
     /// Feed inputs to this module.
     fn feed_input(&mut self, input: Self::CoreInput) -> anyhow::Result<()>;
     /// Generate witnesses for phase0. Any data passing to other steps should be stored inside `self`.
@@ -85,7 +86,7 @@ pub trait CoreBuilder<F: Field>: ComponentBuilder<F, Params: CoreBuilderParams> 
     fn virtual_assign_phase0(
         &mut self,
         // TODO: This could be replaced with a more generic CircuitBuilder. Question: can be CircuitBuilder treated as something like PromiseCircuit?
-        builder: &mut RlcCircuitBuilder<F>,
+        builder: &mut Self::CircuitBuilder,
         // Core circuits can make promise calls.
         promise_caller: PromiseCaller<F>,
         // TODO: Output commitmment
