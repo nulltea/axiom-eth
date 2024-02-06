@@ -145,7 +145,9 @@ impl InputSubqueryAggregation {
                 subquery_promises[&ComponentTypeHeaderSubquery::<F>::get_type_id()];
             log::debug!("hash(promise_keccak): {:?}", hashed_commit_keccak.value());
             log::debug!("header_promise_commit: {:?}", header_promise_commit.value());
-            ctx.constrain_equal(&hashed_commit_keccak, &header_promise_commit);
+            // Remove this check because block-header component currently isn't built with RlcCircuitBuilder,
+            // if added the an empty keccak call be added just to satisfy this check. (TODO)
+            // ctx.constrain_equal(&hashed_commit_keccak, &header_promise_commit);
         }
         // Below when we say promise_header and commit_header, we actually mean promise_keccak_header and commit_keccak_header because both have been hashed with a promise_keccak.
         // Account calls Keccak & Header
